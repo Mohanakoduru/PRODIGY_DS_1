@@ -1,0 +1,58 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Replace 'population.csv' with your file name
+df = pd.read_csv('/content/state_pop_by_age_gender.csv')
+
+# View first few rows to understand the data
+df.head()
+
+
+print(df.columns)
+# 1. Imports
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 2. Load your data (if not already done)
+# df = pd.read_csv('your_file.csv')
+
+# 3. Gender distribution
+gender_dist = df.groupby('gender_group')['population'].sum().reset_index()
+
+plt.figure(figsize=(8,6))
+sns.barplot(
+    x='gender_group',
+    y='population',
+    data=gender_dist,
+    palette='viridis'
+)
+plt.title('Distribution of Population by Gender')
+plt.xlabel('Gender')
+plt.ylabel('Total Population')
+plt.show()
+# 4. Age‑group distribution (sorted by numeric lower bound)
+#    e.g. '0–4', '5–9', … → extract 0, 5, … as “lower”
+
+age_dist = (
+    df.assign(lower_bound = df['age_group']
+                .str.extract(r'(\d+)')
+                .astype(float))
+      .groupby(['age_group','lower_bound'])['population']
+      .sum()
+      .reset_index()
+      .sort_values('lower_bound')
+)
+
+plt.figure(figsize=(10,6))
+sns.barplot(
+    x='age_group',
+    y='population',
+    data=age_dist,
+    palette='coolwarm'
+)
+plt.title('Distribution of Population by Age Group')
+plt.xlabel('Age Group')
+plt.ylabel('Total Population')
+plt.xticks(rotation=45)   # rotate labels if they overlap
+plt.show()
